@@ -12,26 +12,34 @@
 	<br>
 	<div class="jumbotron">
 		<center>
-			<h1>Latest Quotes</h1>
+			<h1>Trending Quotes</h1>
 			<br>
 			<a href="#" class="btn btn-primary" data-toggle="modal" data-target="#myModal">Add Quote</a>
 		</center>
 	</div>
+
+	@if(!empty(Request::segment(1)))
+			<center><h2>All quotes by {{ Request::segment(1) }} <a href="{{ route('index') }}">Show all quotes</a></h2></center><br>
+	@endif
 	
 	@if(count($errors) > 0)
 		<div class="alert alert-dismissible alert-danger">
-  			<button type="button" class="close" data-dismiss="alert">&times;</button>
-			@foreach($errors->all() as $error)
-				{{ $error }}
-			@endforeach
+  			<center>
+	  			<button type="button" class="close" data-dismiss="alert">&times;</button>
+				@foreach($errors->all() as $error)
+					{{ $error }}
+				@endforeach
+			</center>
 		</div>
 	@endif
 
 	@if(Session::has('success'))
-		<div class="alert alert-dismissible alert-success">
-  			<button type="button" class="close" data-dismiss="alert">&times;</button>
-			{{ Session::get('success') }}
-		</div>
+		<center>
+			<div class="alert alert-dismissible alert-success">
+	  			<button type="button" class="close" data-dismiss="alert">&times;</button>
+				{{ Session::get('success') }}
+			</div>
+		</center>
 	@endif
 
 	@for($i = 0; $i < count($quotes); $i++)
@@ -39,13 +47,21 @@
 		 	<div class="close"><a href="{{ route('delete', ['quote_id' => $quotes[$i]->id]) }}">&times;</a></div>
 		 	<center>
 			  "{{ $quotes[$i]->quote }}" <br><br>
-			  Created By <a href="#" class="alert-link">{{ $quotes[$i]->author->name }}</a> <br>
+			  Created By <a href="{{ route('index', ['author' => $quotes[$i]->author->name]) }}" class="alert-link">{{ $quotes[$i]->author->name }}</a> <br>
 			  On {{ $quotes[$i]->created_at }}
 			</center>
 		</div>
 	@endfor
 	
-	
+	<center><h1>
+					@if($quotes->currentPage() !== 1)
+						<a href="{{ $quotes->previousPageUrl() }}"><span class="fa fa-caret-left"></span></a>
+					@endif
+					@if($quotes->currentPage() !== $quotes->lastPage() && $quotes->hasPages())
+						<a href="{{ $quotes->nextPageUrl() }}"><span class="fa fa-caret-right"></span></a>
+					@endif
+	</h1>		
+	</center>
 
 	<div class="modal fade" id="myModal" role="dialog">
 	  <div class="modal-dialog">
